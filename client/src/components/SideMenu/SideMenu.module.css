@@ -1,0 +1,62 @@
+.sidemenu {
+    width: 250px;
+    height: 100vh;
+    background-color: #2c3e50;
+    color: white;
+    transition: width 0.3s ease;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
+  
+
+.sidemenu.closed {
+    width: 60px;
+}
+  
+
+.toggleBtn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+}
+  
+.sidemenu nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+  
+.sidemenu nav ul li {
+    padding: 15px 20px;
+    transition: background-color 0.3s ease;
+}
+  
+.sidemenu nav ul li:hover {
+    background-color: #34495e;
+}
+  
+.sidemenu nav ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+  
+
+.sidemenu.closed nav ul li a,
+.sidemenu.closed nav ul li {
+    display: none;
+}
+  
+
+.logout { 
+    cursor: pointer;
+}
