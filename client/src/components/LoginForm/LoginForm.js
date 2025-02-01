@@ -29,6 +29,7 @@ export default function LoginForm() {
             if (response.status !== 201) { 
                 setErrorMessage(response.error || "Login Failed");
             } else {
+                //* The token received from success login is then stored in browser local storage
                 localStorage.setItem("token", data.token);
                 setErrorMessage("");
                 navigate("/home");

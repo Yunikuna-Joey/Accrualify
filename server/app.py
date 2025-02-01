@@ -27,6 +27,7 @@ app.config['SQLAlCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
 app.config['JWT_SECRET_KEY'] = os.getenv('TOKEN_KEY')
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=15)
 jwt = JWTManager(app)
 
 #* Test landing page for prod, official release can be removed 
