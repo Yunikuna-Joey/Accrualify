@@ -3,7 +3,7 @@ from flask_cors import CORS, cross_origin
 from model import db, User, Timesheet, TimesheetItem
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
-import jwt
+from flask_jwt_extended import JWTManager, create_access_token
 
 from dotenv import load_dotenv
 import os
@@ -25,6 +25,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///storage.sqlite3"
 app.config['SQLAlCHEMY_TRACK_MODIFICATIONS'] = False 
 
 db.init_app(app)
+
+app.config['JWT_SECRET_KEY'] = os.getenv('TOKEN_KEY')
+jwt = JWTManager(app)
 
 #* Test landing page for prod, official release can be removed 
 @app.route("/")
@@ -74,15 +77,9 @@ def login():
             return jsonify({ "error": "Incorrect email/password" }), 403
         
         # Upon successful credentials, create a auth token for session
-        token = jwt.decode({ 
-            "id": received_user.id,
-            "exp": datetime.utcnow() + timedelta(minutes=30)
-        },
-        "environment_variable",
-        "H256"
-        )
+        user_access_token = create_access_token(identity=received_user.username)
 
-        return jsonify({ "token": token}), 201
+        return jsonify({ "token": user_access_token}), 201
 
     except Exception as e: 
         return jsonify({ "error": f"{e}"}), 403

@@ -33,9 +33,6 @@ export default function RegisterForm() {
 
         try { 
             const response = await apiClient.post("/api/signup", userData);
-            console.log("This is the response", response)
-            
-            console.log("This is the response status ", response.status)
 
             if (response.status !== 201) { 
                 setErrorMessage(response.error || "Registration failed");
@@ -45,8 +42,7 @@ export default function RegisterForm() {
             }
 
         } catch (error) { 
-            console.log("This is the catch-block error ", error)
-            setErrorMessage("An error occurred. Try again later.")
+            setErrorMessage("An error occurred. Try again later.", error)
         }
     }
 

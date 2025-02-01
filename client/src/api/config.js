@@ -3,11 +3,12 @@ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
 //* Hold the various CRUD operations
 export const apiClient = { 
     
+    
     async get(endpoint) { 
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: "GET",
             headers: {
-                "Content-Type": "application/sjon"
+                "Content-Type": "application/json"
             },
         });
         return response;
