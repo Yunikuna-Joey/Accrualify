@@ -34,9 +34,6 @@ export default function RegisterForm() {
         try { 
             const response = await apiClient.post("/api/signup", userData);
             console.log("This is the response", response)
-
-            // const result = await response.json();
-            // console.log("This is the result variable ", result)
             
             console.log("This is the response status ", response.status)
 
