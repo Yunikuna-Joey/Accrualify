@@ -18,15 +18,15 @@ class Timesheet(db.Model):
     __tablename__ = "timesheets"
     id = db.Column(db.Integer, primary_key=True)
     title_name = db.Column(db.String, nullable=False)
-    user_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
     #* Create a one-to-many relationship with TimesheetItem
-    timesheet_items = db.relationship("TimesheetItems", backref="timesheet", lazy=True)
+    timesheet_items = db.relationship("TimesheetItem", backref="timesheet", lazy=True)
 
 class TimesheetItem(db.Model): 
     __tablename__ = "timesheet_items" 
     id = db.Column(db.Integer, primary_key=True)
-    timesheet_id = db.Column(db.Integer, nullable=False)
+    timesheet_id = db.Column(db.Integer, db.ForeignKey("timesheets.id"), nullable=False)
     date = db.Column(db.DateTime, nullable=False)
     minute_field = db.Column(db.Integer, nullable=False)
     description_field = db.Column(db.String, nullable=True)

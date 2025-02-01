@@ -1,10 +1,24 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS, cross_origin
 from model import db, User, Timesheet, TimesheetItem
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 app = Flask(__name__)
+CORS(app, resources= { 
+    r"/api/*": {
+        "origins": f"{os.getenv('CLIENT_URL')}",
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
+        "allow_headers": ["Content-Type"],
+        # "supports_credentials": True,
+    }
+})
 
 #**** Using sqlite for development then migrating to Postgres at a later time 
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///storage.sqlite3"
@@ -14,6 +28,7 @@ db.init_app(app)
 
 #* Test landing page for prod, official release can be removed 
 @app.route("/")
+@cross_origin(origins="*")
 def load_home_page(): 
     return "Welcome to TimeHero!"
 
@@ -35,7 +50,7 @@ def create_user():
             username=data.get("username"), 
             email_address=data.get("email_address"),
             password_hash=generate_password_hash(data.get("password")), 
-            creation_date=datetime.timezone.utc()
+            creation_date=datetime.utcnow()
         )   
 
         db.session.add(new_user)
@@ -61,7 +76,7 @@ def login():
         # Upon successful credentials, create a auth token for session
         token = jwt.decode({ 
             "id": received_user.id,
-            "exp": datetime.timezone.utcnow() + timedelta(minutes=30)
+            "exp": datetime.utcnow() + timedelta(minutes=30)
         },
         "environment_variable",
         "H256"
@@ -73,5 +88,8 @@ def login():
         return jsonify({ "error": f"{e}"}), 403
 
 if __name__ == "__main__": 
+    with app.app_context():
+        db.create_all() 
+
     #**** Remove the debug and port parameters in prod
     app.run(debug=True, port=5500)

@@ -1,4 +1,4 @@
-const  API_BASE_URL = process.env.API_BASE_URL;
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
 
 //* Hold the various CRUD operations
 export const apiClient = { 
@@ -10,7 +10,7 @@ export const apiClient = {
                 "Content-Type": "application/sjon"
             },
         });
-        return response.json();
+        return response;
     }, 
 
     async post(endpoint, data) { 
@@ -22,7 +22,7 @@ export const apiClient = {
             body: JSON.stringify(data)
         });
         
-        return response.json();
+        return response;
     },
 
     async put(endpoint, data) { 
@@ -34,7 +34,7 @@ export const apiClient = {
             body: JSON.stringify(data),
         });
 
-        return response.json();
+        return response;
     }, 
 
     async delete(endpoint) { 
@@ -45,6 +45,6 @@ export const apiClient = {
             },
         });
 
-        return response.json();
+        return response;
     },
 }
