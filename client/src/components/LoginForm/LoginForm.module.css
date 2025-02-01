@@ -53,3 +53,7 @@
     display: flex;
     gap: 9rem;
 }
+
+.errorMessage { 
+    color: red;
+}
