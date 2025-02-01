@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./LoginForm.module.css";
 import Button from "../Button/Button"
+import { Link } from "react-router-dom";
 
 export default function LoginForm() { 
     return ( 
@@ -26,15 +27,21 @@ export default function LoginForm() {
                     />
                 </div>
 
-                <div className={styles.checkboxGroup}> 
-                    <input 
-                        type="checkbox"
-                        id="rememberMe"
-                        className={styles.checkbox}
-                    />
-                    <label htmlFor="rememberMe" className={styles.checkboxLabel}>
-                        Remember Me
-                    </label>
+                <div className={styles.checkboxAndLink}>
+                    <div className={styles.checkboxGroup}> 
+                        <input 
+                            type="checkbox"
+                            id="rememberMe"
+                            className={styles.checkbox}
+                        />
+                        <label htmlFor="rememberMe" className={styles.checkboxLabel}>
+                            Remember Me
+                        </label>
+                    </div>
+
+                    <Link to="/register">
+                            Register!
+                    </Link>
                 </div>
 
                 <Button type="submit" className={styles.loginButton}>
