@@ -5,18 +5,26 @@ import styles from "./SideMenu.module.css";
 
 export default function SideMenu() { 
     const [ isOpen, setIsOpen ] = useState(true);
-
+    
     const toggleSidebar = () => { 
         setIsOpen(!isOpen);
     }
 
-    const handleLogout = () => { 
-        console.log("Logout")
+    const handleLogout = async () => { 
+        try { 
+            // Remove the token from client browser (front-end)
+            localStorage.removeItem("token");
+            
+            // Disables the ability to go back to their previous page after logging out
+            window.location.replace("/");
+        } catch(error) { 
+            console.log("Error occurred: ", error);
+        }
+        
     }
 
     return (
         <div className={`${styles.sidemenu} ${isOpen ? "" : styles.closed}`}>
-          {/* Toggle Button */}
           <button className={styles.toggleBtn} onClick={toggleSidebar}>
             {isOpen ? "◄" : "►"}
           </button>
@@ -32,7 +40,6 @@ export default function SideMenu() {
               </li>
 
             </ul>
-
           </nav>
         </div>
     );
