@@ -10,13 +10,14 @@ export default function HomePage() {
         <div className={styles.parentCtn}>
             <SideMenu />
 
-            <TimesheetCard timesheetObject={testObject} />
-            <TimesheetCard timesheetObject={testObject} />
-            <TimesheetCard timesheetObject={testObject} />
-            <TimesheetCard timesheetObject={testObject} />
-            <TimesheetCard timesheetObject={testObject} />
+            <div className={styles.contentCtn}>
+                <TimesheetCard timesheetObject={testObject} />
+                <TimesheetCard timesheetObject={testObject} />
+                <TimesheetCard timesheetObject={testObject} />
+                <TimesheetCard timesheetObject={testObject} />
+                <TimesheetCard timesheetObject={testObject} />
+            </div>
             
-
         </div>
     )
 }

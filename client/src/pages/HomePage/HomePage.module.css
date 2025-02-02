@@ -1,6 +1,7 @@
-.parentCtn { 
-    margin-left: 200px;
-    display: flex; 
+.contentCtn  {
+    margin-left: 60px;
+    display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    gap: 45px;
 }
