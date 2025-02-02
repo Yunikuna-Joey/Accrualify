@@ -3,8 +3,9 @@ from flask_cors import CORS, cross_origin
 from model import db, User, Timesheet, TimesheetItem
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import JWTManager, create_access_token
+from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
 
+from dateutil import parser         #* used for parsing isoformat time objects 
 from dotenv import load_dotenv
 import os
 
@@ -15,8 +16,8 @@ CORS(app, resources= {
     r"/api/*": {
         "origins": f"{os.getenv('CLIENT_URL')}",
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
-        "allow_headers": ["Content-Type"],
-        # "supports_credentials": True,
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True,
     }
 })
 
@@ -35,6 +36,22 @@ jwt = JWTManager(app)
 @cross_origin(origins="*")
 def load_home_page(): 
     return "Welcome to TimeHero!"
+
+@app.route("/api/current-user")
+@jwt_required()
+def load_current_user():
+    try:
+        # Parse the username from the front-end token 
+        current_user_username = get_jwt_identity()
+
+        user = User.query.filter_by(username=current_user_username).first()
+
+        return jsonify({
+            "id": user.id
+        }), 201
+    
+    except Exception as e: 
+        return jsonify({ "error": f"Unable to return current user {e}"}), 401
 
 @app.route("/api/signup", methods=["POST"])
 def create_user():
@@ -84,6 +101,38 @@ def login():
 
     except Exception as e: 
         return jsonify({ "error": f"{e}"}), 403
+    
+@app.route('/api/save-timesheet', methods=["POST"])
+@jwt_required() 
+def saveTimesheet(): 
+    data = request.get_json()
+
+    # Save the timesheet object so we can get the timesheet_id
+    timesheet_data = data.get("timesheet")
+    
+    new_timesheet_object = Timesheet(
+        title_name=timesheet_data.get("title_name"),
+        user_id=timesheet_data.get("user_id")
+    )
+
+    db.session.add(new_timesheet_object)
+    db.session.commit()
+
+    # Save the line items 
+    line_item_data = data.get("lineItems")
+    for item in line_item_data: 
+        new_item = TimesheetItem(
+            timesheet_id=new_timesheet_object.id,
+            date=parser.parse(item.get('date')), 
+            minute_field=item.get("minute_field"), 
+            description_field=item.get("description_field")
+        )
+        db.session.add(new_item)
+    
+    db.session.commit()
+
+    return jsonify({ "message": "Timesheet and items saved success! "}), 201 
+
 
 if __name__ == "__main__": 
     with app.app_context():

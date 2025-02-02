@@ -1,15 +1,18 @@
-import React, { useState } from "react"; 
+import React, { useContext, useState } from "react"; 
 import styles from "./TimesheetPage.module.css"
 import SideMenu from "../../components/SideMenu/SideMenu";
+import { UserContext } from "../../context/UserContext";
+import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify";
 
 // This will be the page to edit straight into the timesheet chosen
 //* This should take in a timesheet object
 export default function TimesheetPage() {
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
+
     // This should be dynamically 
     const [ rows, setRows ] = useState([
-        { date: "", minutes: "", description: "" }, 
-        { date: "", minutes: "", description: "" }, 
-        { date: "", minutes: "", description: "" } 
+        { date: "", minutes: "", description: "" }
     ]);
 
     const addNewRow = () => {
@@ -59,13 +62,79 @@ export default function TimesheetPage() {
         }
     };
 
+    const [ timesheetTitle, setTimesheetTitle ] = useState("")
+    const { userId } = useContext(UserContext)
+
+    const saveTimesheetObject = async (e) => { 
+        // e.preventDefault();
+        
+        // This will save the timesheet 
+        const timesheetData = {
+            "title_name": timesheetTitle, 
+            "user_id": userId, 
+        }
+
+        // Formats a line item through validating date, minutes, and description field
+        const lineItemData = rows.map((row) => ({
+            date: row.date ? new Date(row.date).toISOString() : null, 
+            minute_field: parseInt(row.minutes) || 0, 
+            description_field: row.description || "",
+        })); 
+
+        // Iterates over the formatted data, and removes items that do not have a Date AND Minute
+        const validLineItemData = lineItemData.filter((item) => item.date && item.minute_field > 0);
+
+        try { 
+            const token = localStorage.getItem("token");
+            const response = await fetch(`${API_BASE_URL}/api/save-timesheet`, {
+                method: "POST", 
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token && { "Authorization": `Bearer ${token}` })
+                },
+                body: JSON.stringify({
+                    timesheet: timesheetData, 
+                    lineItems: validLineItemData
+                }), 
+            });
+
+            if (response.status !== 201) { 
+                toast.error("Failed to save timesheet.");
+                console.error("Failed to save timesheet and items: ", response.statusText);
+            } else { 
+                toast.success("Timesheet saved successfully.", {
+                    position: "top-center",
+                    autoClose: 5000,
+                    pauseOnHover: true
+                });
+                console.log("Timesheet saved success.");
+            }
+
+        } catch(error) { 
+            console.error("Error saving timesheet and items: ", error);
+        }
+    }
+
     return (
         <div className={styles.timesheetCtn}>
             <SideMenu />
 
+            <ToastContainer />
+
+            <div className={styles.documentTitleCtn}> 
+                <input 
+                    type="text"
+                    id="documentTitleName"
+                    placeholder="Enter Your Title"
+                    value={timesheetTitle}
+                    onChange={(e) => setTimesheetTitle(e.target.value)}
+                    required
+                />
+            </div>
+
             <div className={styles.buttonCtn}>
                 <button className={styles.addBtn} onClick={addNewRow}> Add new cell </button>
-                <button className={styles.saveBtn}> Save </button>
+                <button className={styles.saveBtn} onClick={saveTimesheetObject}> Save </button>
             </div>
 
             <div className={styles.tablesCtn}>
@@ -79,23 +148,18 @@ export default function TimesheetPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {/* {[...Array(3)].map((_, index) => (
-                                <tr key={index}>
-                                    <td> Cell 1 </td>
-                                    <td> Cell 2 </td>
-                                    <td> Cell 3 </td>
-                                </tr>
-                            ))} */}
-
                             {rows.map((row, index) => (
                                 <tr key={index}> 
                                     <td> 
-                                        <button 
-                                            className={styles.deleteBtn}
-                                            onClick={() => deleteRow(index)}
-                                        >
-                                            ❌
-                                        </button>
+                                        {rows.length > 1 && (
+                                            <button 
+                                                className={styles.deleteBtn}
+                                                onClick={() => deleteRow(index)}
+                                            >
+                                                ❌
+                                            </button>
+                                        )}
+                                        
                                         <input 
                                             type="date"
                                             value={row.date}

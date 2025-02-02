@@ -7,6 +7,18 @@
     position: relative;
 }
 
+.documentTitleCtn { 
+    position: absolute;
+    top: 20px;
+    left: 210px;
+}
+
+.documentTitleCtn input { 
+    font-size: 24px;
+    border-radius: 10px;
+    padding: 8px 12px; 
+}
+
 .buttonCtn { 
     position: absolute;
     top: 20px;
@@ -56,6 +68,10 @@
     overflow-y: auto;
     border-radius: 8px;
     box-shadow: 0, 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.tableWrapper input { 
+    font-size: 20px;
 }
 
 .tableWrapper table { 

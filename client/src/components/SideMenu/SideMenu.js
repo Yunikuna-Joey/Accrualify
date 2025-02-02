@@ -1,6 +1,8 @@
-import React, { useState } from 'react'; 
+import React, { useContext, useState } from 'react'; 
 import { Link } from "react-router-dom";
 import styles from "./SideMenu.module.css";
+import { UserContext } from '../../context/UserContext';
+
 
 
 export default function SideMenu() { 
@@ -10,10 +12,15 @@ export default function SideMenu() {
         setIsOpen(!isOpen);
     }
 
+    const { setUserId } = useContext(UserContext);
+
     const handleLogout = async () => { 
         try { 
             // Remove the token from client browser (front-end)
             localStorage.removeItem("token");
+
+            // Remove the user Context
+            setUserId(null)
             
             // Disables the ability to go back to their previous page after logging out
             window.location.replace("/");

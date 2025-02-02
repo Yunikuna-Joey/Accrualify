@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import styles from "./LoginForm.module.css";
 import Button from "../Button/Button"
 import { Link } from "react-router-dom";
 import { apiClient } from "../../api/config";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../context/UserContext";
+
 
 export default function LoginForm() { 
     const [ email, setEmail ] = useState("")
@@ -12,6 +14,8 @@ export default function LoginForm() {
     const [ errorMessage, setErrorMessage ] = useState("")
 
     const navigate = useNavigate();
+
+    const { setUserId } = useContext(UserContext)
 
     const loginUser = async (e) => { 
         e.preventDefault(); 
@@ -31,6 +35,23 @@ export default function LoginForm() {
             } else {
                 //* The token received from success login is then stored in browser local storage
                 localStorage.setItem("token", data.token);
+                const token = localStorage.getItem("token")
+
+                //* Attempts to fetch the user_id for UserContext
+                const userIdResponse = await apiClient.get("/api/current-user", { 
+                    headers: { 
+                        "Authorization": `Bearer ${token}`,
+                    },
+                });
+                
+                // when successful, then set the UserContext
+                if (userIdResponse.status !== 201) {
+                    console.error("There was an error creating the UserContext during login.")
+                } else { 
+                    const userIdResponseData = await userIdResponse.json()
+                    setUserId(userIdResponseData.id)
+                }
+                
                 setErrorMessage("");
                 navigate("/home");
             }

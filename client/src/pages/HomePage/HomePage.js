@@ -5,7 +5,6 @@ import TimesheetCard from "../../components/TimesheetCard/TimesheetCard";
 import CreateTimesheetBtn from "../../components/CreateTimesheetBtn/CreateTimesheetBtn";
 
 export default function HomePage() { 
-    const testObject = { name: "Timesheet 1" }; 
 
     return (
         <div className={styles.parentCtn}>
@@ -13,12 +12,6 @@ export default function HomePage() {
 
             <div className={styles.contentCtn}>
                 <CreateTimesheetBtn />
-
-                <TimesheetCard timesheetObject={testObject} />
-                <TimesheetCard timesheetObject={testObject} />
-                <TimesheetCard timesheetObject={testObject} />
-                <TimesheetCard timesheetObject={testObject} />
-                <TimesheetCard timesheetObject={testObject} />
             </div>
             
         </div>

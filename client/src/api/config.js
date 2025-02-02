@@ -2,13 +2,14 @@ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
 
 //* Hold the various CRUD operations
 export const apiClient = { 
-    
     async get(endpoint) { 
         try {
+            const token = localStorage.getItem("token");
             const response = await fetch(`${API_BASE_URL}${endpoint}`, {
                 method: "GET",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    ...(token && { "Authorization": `Bearer ${token}` }) 
                 },
             });
             
@@ -22,11 +23,13 @@ export const apiClient = {
 
     async post(endpoint, data) { 
         try {
+            const token = localStorage.getItem("token");
             const response = await fetch(`${API_BASE_URL}${endpoint}`, {
                 method: "POST",
-                headers: { 
+                headers: {
                     "Content-Type": "application/json",
-                }, 
+                    ...(token && { "Authorization": `Bearer ${token}` })
+                },
                 body: JSON.stringify(data)
             });
             
@@ -39,10 +42,12 @@ export const apiClient = {
 
     async put(endpoint, data) { 
         try {
+            const token = localStorage.getItem("token");
             const response = await fetch(`${API_BASE_URL}${endpoint}`, {
                 method: "PUT", 
-                headers: { 
+                headers: {
                     "Content-Type": "application/json",
+                    ...(token && { "Authorization": `Bearer ${token}` }) 
                 },
                 body: JSON.stringify(data),
             });
@@ -56,10 +61,12 @@ export const apiClient = {
 
     async delete(endpoint) { 
         try {
+            const token = localStorage.getItem("token");
             const response = await fetch(`${API_BASE_URL}${endpoint}`, {
                 method: "DELETE", 
-                headers: { 
-                    "Content-Type": "application/json", 
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token && { "Authorization": `Bearer ${token}` })
                 },
             });
 
