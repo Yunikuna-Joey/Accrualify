@@ -1,0 +1,6 @@
+.parentCtn { 
+    margin-left: 200px;
+    display: flex; 
+    flex-direction: row;
+    flex-wrap: wrap;
+}
