@@ -128,3 +128,11 @@
     }
 }
 
+.tableWrapper2 input {
+    font-size: 20px;
+    width: 80px;
+}
+
+.tableWrapper2 td { 
+    font-size: 20px;
+}
