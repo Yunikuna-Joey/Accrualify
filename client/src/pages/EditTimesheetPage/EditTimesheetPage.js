@@ -5,12 +5,15 @@ import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import { useParams } from "react-router-dom";
 import { apiClient } from "../../api/config";
+import { useNavigate } from "react-router-dom";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import { faSort, faSortUp, faSortDown, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 export default function EditTimesheetPage() {
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL 
+
+    const navigate = useNavigate();
 
     const { timesheetId } = useParams(); 
     const [ rows, setRows ] = useState([
@@ -150,6 +153,12 @@ export default function EditTimesheetPage() {
         }
     };
 
+    const handleDelete = () => {
+        if (window.confirm("Are you sure you want to delete this timesheet? This action cannot be undone.")) {
+            deleteTimesheetObject();
+        }
+    };
+
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const year = date.getFullYear();
@@ -213,6 +222,30 @@ export default function EditTimesheetPage() {
         }
     }
 
+    const deleteTimesheetObject = async () => { 
+        try { 
+            console.log("This is timesheetId", timesheetId)
+            const response = await apiClient.delete(`/api/delete-timesheet/${timesheetId}`)
+
+            if (response.status !== 200) { 
+                toast.error("There was an issue trying to delete this timesheet", {
+                    position: "top-center",
+                    autoClose: 5000,
+                    pauseOnHover: true
+                })
+            } else { 
+                navigate("/home");
+                toast.success("Delete success", {
+                    position: "top-center",
+                    autoClose: 3000
+                })
+            }
+
+        } catch(error) { 
+            console.error("There was an error deleting this timesheet", error)
+        }
+    }
+
     return (
         <div className={styles.timesheetCtn}>
             <SideMenu />
@@ -228,6 +261,8 @@ export default function EditTimesheetPage() {
                     onChange={(e) => setTimesheetTitle(e.target.value)}
                     required
                 />
+
+                <FontAwesomeIcon icon={faTrash} onClick={handleDelete} style={{ color: "red", fontSize: "24px", paddingLeft: "10px", cursor: "pointer"}} />
             </div>
 
             <div className={styles.buttonCtn}>
