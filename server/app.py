@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
+from flask_migrate import Migrate
 from model import db, User, Timesheet, TimesheetItem
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -14,7 +15,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app, resources= { 
     r"/api/*": {
-        "origins": f"{os.environ.get('CLIENT_URL')}",
+        "origins": {os.environ.get('CLIENT_URL')},
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
         "allow_headers": ["Content-Type", "Authorization"],
         "supports_credentials": True,
@@ -27,8 +28,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DB_URL")
 app.config['SQLAlCHEMY_TRACK_MODIFICATIONS'] = False 
 
 db.init_app(app)
+Migrate(app, db)
 
-app.config['JWT_SECRET_KEY'] =os.environ.get('TOKEN_KEY')
+app.config['JWT_SECRET_KEY'] = os.environ.get('TOKEN_KEY')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=15)
 jwt = JWTManager(app)
 
