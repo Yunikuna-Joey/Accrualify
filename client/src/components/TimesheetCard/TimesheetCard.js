@@ -7,7 +7,7 @@ export default function TimesheetCard({ timesheetObject }) {
             <div className={styles.iconTile}>
                 <img src="/document.svg" alt="document" />
                 <div className={styles.metadata}>
-                    <p> { timesheetObject.name } </p>
+                    <p> { timesheetObject.title_name } </p>
                 </div>
             </div>
         </div>

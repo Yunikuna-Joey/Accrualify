@@ -37,7 +37,7 @@ jwt = JWTManager(app)
 def load_home_page(): 
     return "Welcome to TimeHero!"
 
-@app.route("/api/current-user")
+@app.route("/api/current-user", methods=["GET"])
 @jwt_required()
 def load_current_user():
     try:
@@ -133,6 +133,21 @@ def saveTimesheet():
 
     return jsonify({ "message": "Timesheet and items saved success! "}), 201 
 
+@app.route("/api/get-timecard/<int:user_id>", methods=["GET"])
+@jwt_required()
+def get_timecard(user_id): 
+    try: 
+        # Create query to grab all of the timesheets associated with user_id
+        query = Timesheet.query.filter_by(user_id=user_id)
+
+        timesheet_data = [{
+            "title_name": timesheet.title_name,
+        } for timesheet in query]
+
+        return jsonify(timesheet_data), 200
+
+    except Exception as e: 
+        return jsonify({ "error": f"There was an error grabbing timesheet(s) {e}"}), 404
 
 if __name__ == "__main__": 
     with app.app_context():
