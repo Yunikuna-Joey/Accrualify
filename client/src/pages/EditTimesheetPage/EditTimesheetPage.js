@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react"; 
+import React, { useEffect, useState, useRef } from "react"; 
 import styles from "./EditTimesheetPage.module.css"
 import SideMenu from "../../components/SideMenu/SideMenu";
-// import { UserContext } from "../../context/UserContext";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import { useParams } from "react-router-dom";
 import { apiClient } from "../../api/config";
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 
 export default function EditTimesheetPage() {
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL 
@@ -15,7 +17,44 @@ export default function EditTimesheetPage() {
         { date: "", minutes: "", description: "" }
     ]);
     const [ timesheetTitle, setTimesheetTitle ] = useState("")
+
+    const lastState = useRef([]);
+
+    const [ sortOrder, setSortOrder ] = useState('none');
+
+    const handleSort = () => {
+        let newOrder;
+        if (sortOrder === "none") {
+            // Store most recent unsorted state
+            lastState.current = [...rows];
+            newOrder = "asc";
+            setSortOrder(newOrder);
+            sortRowsByDate(newOrder);
+        } else if (sortOrder === "asc") {
+            newOrder = "desc";
+            setSortOrder(newOrder);
+            sortRowsByDate(newOrder);
+        } else {
+            newOrder = "none";
+            setSortOrder(newOrder);
+            sortRowsByDate(newOrder);
+        }
+    };
+
+    const sortRowsByDate = (order) => {
+        if (order === "none") {
+            setRows([...lastState.current]);
+            return;
+        }
     
+        const sortedRows = [...rows].sort((a, b) => {
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return order === 'asc' ? dateA - dateB : dateB - dateA;
+        });
+        setRows(sortedRows);
+    };
+
     useEffect(() => { 
         const fetchTimesheetItems = async () => {
             try { 
@@ -33,6 +72,7 @@ export default function EditTimesheetPage() {
                     description: item.description_field || "",
                 })); 
                 setRows(formatData);
+                lastState.current = formatData;
     
             } catch(error) { 
                 console.error("Error fetching line items", error);
@@ -60,8 +100,12 @@ export default function EditTimesheetPage() {
     }, [timesheetId])
 
     const addNewRow = () => {
-            setRows([...rows, { date: "", minutes: "", description: "" }]);
-        };
+        const newRows = [...rows, { date: "", minutes: "", description: "" }];
+        setRows(newRows);
+        if (sortOrder === 'none') {
+            lastState.current = newRows;
+        }
+    };
     
     const deleteRow = (indexToRemove) => { 
         // Filter creates a new array, will keep the rows where the index !== indexToRemove
@@ -196,7 +240,14 @@ export default function EditTimesheetPage() {
                     <table>
                         <thead>
                             <tr>
-                                <th> Date </th>
+                                <th> 
+                                    Date
+                                    <span onClick={handleSort} style={{ cursor: 'pointer', marginLeft: "10px"}} >
+                                        {sortOrder === 'asc' && <FontAwesomeIcon icon={faSortUp} className="sort-icon" />}
+                                        {sortOrder === 'desc' && <FontAwesomeIcon icon={faSortDown} className="sort-icon" />}
+                                        {sortOrder === 'none' && <FontAwesomeIcon icon={faSort} className="sort-icon" />}
+                                    </span>
+                                </th>
                                 <th> Number of Minutes </th>
                                 <th> Description</th>
                             </tr>
