@@ -118,6 +118,9 @@ export default function TimesheetPage() {
         }
     }
 
+    // Checks for one valid entry before allowing save to continue
+    const isSaveDisabled = timesheetTitle.trim() === "" || (!rows.some(row => row.date.trim() !== "" && row.minutes.trim() !== ""));
+
     return (
         <div className={styles.timesheetCtn}>
             <SideMenu />
@@ -137,7 +140,7 @@ export default function TimesheetPage() {
 
             <div className={styles.buttonCtn}>
                 <button className={styles.addBtn} onClick={addNewRow}> Add new cell </button>
-                <button className={styles.saveBtn} onClick={saveTimesheetObject}> Save </button>
+                <button className={styles.saveBtn} onClick={saveTimesheetObject} disabled={isSaveDisabled}> Save </button>
             </div>
 
             <div className={styles.tablesCtn}>
