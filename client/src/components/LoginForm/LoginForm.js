@@ -102,7 +102,7 @@ export default function LoginForm() {
                             </label>
                         </div>
 
-                        <Link to="/register">
+                        <Link to="/register" style={{ color: "white"}}>
                                 Register!
                         </Link>
                     </div>
