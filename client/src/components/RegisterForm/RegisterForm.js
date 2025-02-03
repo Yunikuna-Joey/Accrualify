@@ -15,10 +15,25 @@ export default function RegisterForm() {
 
     const navigate = useNavigate();
 
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+
     const registerUser = async (e) => { 
 
         //* Restricts the page from reloading after button press 
         e.preventDefault();
+
+        if (!emailRegex.test(email)) { 
+            setErrorMessage("Invalid email format.");
+            return
+        }
+
+        if (!passwordRegex.test(password)) {
+            setErrorMessage(
+                "Password must be at least 8 characters long, contain one uppercase letter, and one special character."
+            );
+            return;
+        }
 
         if (confirmPassword !== password) { 
             setErrorMessage("Passwords do not match!");

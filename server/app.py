@@ -68,8 +68,8 @@ def create_user():
             return jsonify({ "error": "Email address is already in-use!"}), 400 
 
         new_user = User(
-            username=data.get("username"), 
-            email_address=data.get("email_address"),
+            username=data.get("username").strip(), 
+            email_address=data.get("email_address").strip(),
             password_hash=generate_password_hash(data.get("password")), 
             creation_date=datetime.utcnow()
         )   
@@ -88,7 +88,7 @@ def login():
         data = request.get_json()
         
         # Look up User from credentials
-        received_user = User.query.filter_by(email_address=data.get("email_address")).first()
+        received_user = User.query.filter_by(email_address=data.get("email_address").strip()).first()
 
         # Conditional for checking the email and password for an user    
         if not check_password_hash(received_user.password_hash, data.get("password_hash")) or not received_user: 
