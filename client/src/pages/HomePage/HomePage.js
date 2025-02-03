@@ -44,6 +44,8 @@ export default function HomePage() {
         <div className={styles.parentCtn}>
             <SideMenu />
 
+            <ToastContainer />
+
             <div className={styles.contentCtn}>
                 <CreateTimesheetBtn />
 
