@@ -1,4 +1,5 @@
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
+// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
+const API_BASE_URL= "https://accrualifyassignment.onrender.com"
 
 //* Hold the various CRUD operations
 export const apiClient = { 
