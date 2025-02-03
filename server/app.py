@@ -242,8 +242,8 @@ def delete_timesheet(timesheet_id):
         return jsonify({ "error": f"Error deleting the timesheet: {e}"}), 400
 
 if __name__ == "__main__": 
-    # with app.app_context():
-    #     db.create_all() 
+    with app.app_context():
+        db.create_all() 
 
     #***** Remove the debug and port parameters in prod
     # app.run(debug=True, port=5500)
