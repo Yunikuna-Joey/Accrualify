@@ -22,7 +22,8 @@ CORS(app, resources= {
 })
 
 #**** Using sqlite for development then migrating to Postgres at a later time 
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///storage.sqlite3"
+# app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///storage.sqlite3"
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DB_URL")
 app.config['SQLAlCHEMY_TRACK_MODIFICATIONS'] = False 
 
 db.init_app(app)
