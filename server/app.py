@@ -14,7 +14,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app, resources= { 
     r"/api/*": {
-        "origins": f"{os.getenv('CLIENT_URL')}",
+        "origins": f"{os.getenviron.get('CLIENT_URL')}",
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
         "allow_headers": ["Content-Type", "Authorization"],
         "supports_credentials": True,
@@ -23,12 +23,12 @@ CORS(app, resources= {
 
 #**** Using sqlite for development then migrating to Postgres at a later time 
 # app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///storage.sqlite3"
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DB_URL")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenviron.get("DB_URL")
 app.config['SQLAlCHEMY_TRACK_MODIFICATIONS'] = False 
 
 db.init_app(app)
 
-app.config['JWT_SECRET_KEY'] = os.getenv('TOKEN_KEY')
+app.config['JWT_SECRET_KEY'] =os.getenviron.get('TOKEN_KEY')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=15)
 jwt = JWTManager(app)
 
