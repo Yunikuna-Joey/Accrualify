@@ -15,7 +15,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app, resources= { 
     r"/api/*": {
-        "origins": {os.environ.get('CLIENT_URL')},
+        "origins": ["https://main.d2k8f1eh98wgtw.amplifyapp.com/", "https://main.d2k8f1eh98wgtw.amplifyapp.com"],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
         "allow_headers": ["Content-Type", "Authorization"],
         "supports_credentials": True,
@@ -247,5 +247,6 @@ if __name__ == "__main__":
 
     #***** Remove the debug and port parameters in prod
     # app.run(debug=True, port=5500)
+
 
     app.run()
