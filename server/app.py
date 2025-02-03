@@ -133,21 +133,77 @@ def saveTimesheet():
 
     return jsonify({ "message": "Timesheet and items saved success! "}), 201 
 
-@app.route("/api/get-timecard/<int:user_id>", methods=["GET"])
+@app.route("/api/get-timesheet-object/<int:timesheet_id>", methods=["GET"])
 @jwt_required()
-def get_timecard(user_id): 
+def get_timecard_object(timesheet_id):
+
+    timesheetObject = Timesheet.query.filter_by(id=timesheet_id).first()
+    
+    hashObject = { 
+        "title_name": timesheetObject.title_name,
+        "user_id": timesheetObject.user_id
+    }
+
+    return jsonify(hashObject), 200
+
+@app.route("/api/get-timecard-list/<int:user_id>", methods=["GET"])
+@jwt_required()
+def get_timecard_list(user_id): 
     try: 
         # Create query to grab all of the timesheets associated with user_id
         query = Timesheet.query.filter_by(user_id=user_id)
 
         timesheet_data = [{
-            "title_name": timesheet.title_name,
+            "id": timesheet.id,
+            "title_name": timesheet.title_name
         } for timesheet in query]
 
         return jsonify(timesheet_data), 200
 
     except Exception as e: 
         return jsonify({ "error": f"There was an error grabbing timesheet(s) {e}"}), 404
+
+@app.route("/api/get-timesheet-items/<int:timesheet_id>", methods=["GET"])
+@jwt_required()
+def get_line_items(timesheet_id): 
+    line_items = TimesheetItem.query.filter_by(timesheet_id=timesheet_id).all()
+
+    line_items_data = [{
+        "id": line_item.id,
+        "date": line_item.date,
+        "minute_field": line_item.minute_field,
+        "description_field": line_item.description_field
+    } for line_item in line_items]
+
+    return jsonify(line_items_data), 200
+
+@app.route("/api/save-edit-timesheet", methods=["PUT"])
+@jwt_required()
+def save_edit_timesheet(): 
+    data = request.get_json()
+
+    timesheet_data = data.get("timesheet")
+
+    # Grab the existing timesheet 
+    timesheet = Timesheet.query.get(timesheet_data.get("id"))
+
+    timesheet.title_name = timesheet_data.get("title_name")
+    
+    # Deletes the existing line-items
+    TimesheetItem.query.filter_by(timesheet_id=timesheet_data.get("id")).delete()
+
+    line_items = data.get("lineItems")
+    for item in line_items: 
+        new_item = TimesheetItem(
+            timesheet_id=timesheet_data.get("id"),
+            date=parser.parse(item.get("date")),
+            minute_field=item.get("minute_field"),
+            description_field=item.get("description_field")
+        )
+        db.session.add(new_item)
+    db.session.commit()
+
+    return jsonify({ "message": "Timesheet updated success"}), 201
 
 if __name__ == "__main__": 
     with app.app_context():

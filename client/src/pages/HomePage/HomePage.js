@@ -16,7 +16,7 @@ export default function HomePage() {
         const fetchTimesheetList = async () => { 
             try { 
                 
-                const response = await apiClient.get(`/api/get-timecard/${userId}`)
+                const response = await apiClient.get(`/api/get-timecard-list/${userId}`)
 
                 if (response.status !== 200) { 
                     toast.error("Failed to grab timesheets", {
@@ -28,7 +28,6 @@ export default function HomePage() {
 
                 const data = await response.json();
                 setTimesheetList(data);
-                console.log("This is the timesheetList data", timesheetList);
             } catch(error) { 
                 toast.error(error.message, {
                     position: "top-center", 
@@ -38,7 +37,7 @@ export default function HomePage() {
             }
         }
         fetchTimesheetList();
-    }, [])
+    }, [userId])
 
     return (
         <div className={styles.parentCtn}>

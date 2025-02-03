@@ -1,0 +1,130 @@
+.timesheetCtn { 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #e0e0e0;
+    position: relative;
+}
+
+.documentTitleCtn { 
+    position: absolute;
+    top: 20px;
+    left: 210px;
+}
+
+.documentTitleCtn input { 
+    font-size: 24px;
+    border-radius: 10px;
+    padding: 8px 12px; 
+}
+
+.buttonCtn { 
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 20px;
+}
+
+.addBtn {
+    background-color: #007bff; 
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.saveBtn {
+    background-color: green; 
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.deleteBtn { 
+    background: none;
+    border: none; 
+    cursor: pointer;
+    font-size: 18px;
+    color: red;
+}
+
+.tablesCtn { 
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-left: 200px;
+}
+
+.tableWrapper { 
+    width: 800px;
+    max-height: 70vh;
+    overflow-y: auto;
+    border-radius: 8px;
+    box-shadow: 0, 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.tableWrapper input { 
+    font-size: 20px;
+}
+
+.tableWrapper table { 
+    width: 800px;
+    border-collapse: collapse;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.tableWrapper th, td { 
+    padding: 15px;
+    background-color: #2c3e50;
+    color: #fff;
+}
+
+.tableWrapper th { 
+    text-align: left;
+}
+
+.tableWrapper thead { 
+    th { 
+        background-color: #2c3e50;
+    }
+}
+
+.tableWrapper2 { 
+    width: 350px;
+    max-height: 70vh;
+    border-radius: 8px;
+    box-shadow: 0, 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.tableWrapper2 table { 
+    width: 200px;
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.tableWrapper2 th, td { 
+    padding: 15px;
+    background-color: #2c3e50;
+    color: #fff;
+}
+
+.tableWrapper2 th { 
+    text-align: left;
+}
+
+.tableWrapper2 thead { 
+    th { 
+        background-color: #2c3e50;
+    }
+}
+

@@ -6,6 +6,7 @@ import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import HomePage from "./pages/HomePage/HomePage";
 import TimesheetPage from "./pages/TimesheetPage/TimesheetPage";
 import { UserProvider } from "./context/UserContext";
+import EditTimesheetPage from "./pages/EditTimesheetPage/EditTimesheetPage";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/template" element={<TimesheetPage />} />
+          <Route path="/timesheet/:timesheetId" element={<EditTimesheetPage />} />
         </Routes>
       </Router>
     </UserProvider>

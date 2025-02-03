@@ -1,23 +1,68 @@
-import React, { useContext, useState } from "react"; 
-import styles from "./TimesheetPage.module.css"
+import React, { useContext, useEffect, useState } from "react"; 
+import styles from "./EditTimesheetPage.module.css"
 import SideMenu from "../../components/SideMenu/SideMenu";
-import { UserContext } from "../../context/UserContext";
+// import { UserContext } from "../../context/UserContext";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
+import { useParams } from "react-router-dom";
+import { apiClient } from "../../api/config";
 
-// This will act as the create document 
-export default function TimesheetPage() {
-    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
+export default function EditTimesheetPage() {
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL 
 
-    // This should be dynamically 
+    const { timesheetId } = useParams(); 
     const [ rows, setRows ] = useState([
         { date: "", minutes: "", description: "" }
     ]);
+    const [ timesheetTitle, setTimesheetTitle ] = useState("")
+    
+    useEffect(() => { 
+        const fetchTimesheetItems = async () => {
+            try { 
+                const response = await apiClient.get(`/api/get-timesheet-items/${timesheetId}`);
+
+                if (response.status !== 200) { 
+                    console.error("There was an error communicating with the API");
+                }
+
+                const data = await response.json();
+
+                const formatData = data.map(item => ({
+                    date: formatDate(item.date), 
+                    minutes: item.minute_field,
+                    description: item.description_field || "",
+                })); 
+                setRows(formatData);
+    
+            } catch(error) { 
+                console.error("Error fetching line items", error);
+            }
+        }
+
+        const fetchTimesheetObject = async () => { 
+            try { 
+                const response = await apiClient.get(`/api/get-timesheet-object/${timesheetId}`);
+
+                if (response.status !== 200) {
+                    console.error("There was an error communicating with the API for object");
+                } 
+                
+                const data = await response.json();
+                setTimesheetTitle(data.title_name);
+
+            } catch(error) { 
+                console.error("Error fetching the timesheetObject via id.", error)
+            }
+        }
+        fetchTimesheetItems();
+        fetchTimesheetObject();
+
+    }, [timesheetId])
 
     const addNewRow = () => {
-        setRows([...rows, { date: "", minutes: "", description: "" }]);
-    };
-
+            setRows([...rows, { date: "", minutes: "", description: "" }]);
+        };
+    
     const deleteRow = (indexToRemove) => { 
         // Filter creates a new array, will keep the rows where the index !== indexToRemove
         const updatedRows = rows.filter((row, index) => {
@@ -61,49 +106,52 @@ export default function TimesheetPage() {
         }
     };
 
-    const [ timesheetTitle, setTimesheetTitle ] = useState("")
-    const { userId } = useContext(UserContext)
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); 
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
 
-    const saveTimesheetObject = async (e) => { 
-        // e.preventDefault();
-        
-        // This will save the timesheet 
-        const timesheetData = {
-            "title_name": timesheetTitle, 
-            "user_id": userId, 
+    const saveTimesheetObject = async () => { 
+        // Pack the timesheet document data
+        const currentTimesheetObject = { 
+            id: timesheetId,
+            title_name: timesheetTitle,
         }
 
-        // Formats a line item through validating date, minutes, and description field
+        // Pack the line-item data
         const lineItemData = rows.map((row) => ({
-            date: row.date ? new Date(row.date).toISOString() : null, 
+            date: row.date ? new Date(row.date).toISOString() : null,
             minute_field: parseInt(row.minutes) || 0, 
-            description_field: row.description || "",
-        })); 
+            description_field: row.description || ""
+        }))
 
-        // Iterates over the formatted data, and removes items that do not have a Date AND Minute
+        // Validate line item data
         const validLineItemData = lineItemData.filter((item) => item.date && item.minute_field > 0);
 
         try { 
             const token = localStorage.getItem("token");
-            const response = await fetch(`${API_BASE_URL}/api/save-timesheet`, {
-                method: "POST", 
+            const response = await fetch(`${API_BASE_URL}/api/save-edit-timesheet`, {
+                method: "PUT", 
                 headers: {
                     "Content-Type": "application/json",
                     ...(token && { "Authorization": `Bearer ${token}` })
-                },
+                }, 
                 body: JSON.stringify({
-                    timesheet: timesheetData, 
+                    timesheet: currentTimesheetObject,
                     lineItems: validLineItemData
-                }), 
+                }),
             });
 
             if (response.status !== 201) { 
-                toast.error("Failed to save timesheet.", {
+                toast.error("Failed to save this timesheet.", {
                     position: "top-center",
                     autoClose: 5000,
                     pauseOnHover: true
                 });
-                console.error("Failed to save timesheet and items: ", response.statusText);
+                console.error("Failed to save this timesheet and its items.", response.statusText);
             } else { 
                 toast.success("Timesheet saved successfully.", {
                     position: "top-center",
@@ -112,9 +160,12 @@ export default function TimesheetPage() {
                 });
                 console.log("Timesheet saved success.");
             }
-
-        } catch(error) { 
-            console.error("Error saving timesheet and items: ", error);
+        } catch(error) {
+            toast.error(error, {
+                position: "top-center",
+                autoClose: 5000,
+                pauseOnHover: true
+            })
         }
     }
 
